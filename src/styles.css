@@ -2,3 +2,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#photo{
+    display:none;
+}
+
+@media (max-width:1023px){
+    #light{
+        display:none;
+    }
+    #photo{
+        display:block;
+    }
+    #profileCard{
+        display:none
+    }
+}
+
+
+:root {
+  --bg: #0b0d0a;
+  --bg-alt: #161616;
+  --text-primary: #f1f2f0;
+  --text-secondary: #d4dad4;
+  --accent-hover: rgba(0, 206, 209, 0.9); 
+  --accent: rgba(0, 128, 128, 0.8); 
+  --border: #2b2f2a;
+  --muted: #152015;
+}
+
+.footer-gradient {
+  background: linear-gradient(
+    180deg,
+    #0b0d0a 0%,
+    #1b1f1a 28%,
+    rgba(0, 128, 128, 0.3) 58%,
+    rgba(0, 206, 209, 0.12) 100% 
+  );
+}
