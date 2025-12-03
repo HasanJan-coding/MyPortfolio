@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Download } from "lucide-react";
+import gsap from "gsap";
+import SplitText from "gsap/SplitText";
 import Typewriter from "typewriter-effect/dist/core";
 
 /**
@@ -15,7 +17,112 @@ export default function Hero({
   const profileRef = useRef(null);
   const roleRotatorRef = useRef(null);
   const blobRef = useRef(null);
+  const gsapContextRef = useRef(null);
+  const splitTitleRef = useRef(null);
+  const splitParaRef = useRef(null);
   const typewriterRef = useRef(null);
+
+
+
+
+
+
+
+
+
+  
+useEffect(() => {
+  try {
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    gsap.registerPlugin(SplitText);
+
+    // scope everything to rootRef so selectors don't hit other components on the page
+    gsapContextRef.current = gsap.context(() => {
+      if (prefersReducedMotion) return;
+
+      // SplitText instances
+      splitTitleRef.current = new SplitText("#h-title", { type: "words,chars" });
+      splitParaRef.current = new SplitText("#h-text", { type: "lines" });
+
+      // entry tweens timeline
+      gsap.from("#a-card", {
+        delay: 0.5,
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.9,
+        ease: "power2.out",
+      });
+
+      const tl = gsap.timeline();
+      tl.from(splitTitleRef.current.chars, {
+        y: -20,
+        opacity: 0,
+        stagger: 0.03,
+        duration: 0.6,
+        ease: "power3.out",
+      });
+
+      tl.from(
+        splitParaRef.current.lines,
+        { y: "100%", opacity: 0, stagger: 0.06, ease: "expo.out" },
+        "-=0.3"
+      );
+
+      tl.from(
+        ".h-btns",
+        { scale: 0, opacity: 0, stagger: 0.08, duration: 0.45 },
+        "-=0.2"
+      );
+
+      tl.from(
+        ".h-boxes",
+        { opacity: 0, scale: 0, stagger: { amount: 0.28, from: "end" }, duration: 0.45 },
+        "-=0.25"
+      );
+
+      /* GSAP ANIMATIONS */
+      /* Entry animations (existing) */
+      // ---- smooth painting swing: use profileRef (avoid class collisions) ----
+      if (profileRef && profileRef.current) {
+        // ensure GSAP owns transform state and hint GPU
+        gsap.set(profileRef.current, { transformOrigin: "top center", force3D: true, z: 0.01 });
+
+        // single looping tween that won't overwrite other tweens on different props
+        gsap.to(profileRef.current, {
+          rotation: 6,
+          duration: 2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          overwrite: false,          // don't stomp other tweens
+          // immediateRender false avoids snapping from immediate render
+          immediateRender: false,
+        });
+      }
+      /* END GSAP ANIMATIONS */
+    }, rootRef); // <-- pass rootRef to limit selector scope
+  } catch (err) {
+    console.error("GSAP_INIT_ERR", err);
+  }
+
+  return () => {
+    try {
+      if (gsapContextRef.current) gsapContextRef.current.revert(); // kills local tweens
+      if (splitTitleRef.current?.revert) splitTitleRef.current.revert();
+      if (splitParaRef.current?.revert) splitParaRef.current.revert();
+    } catch (err) {
+      console.error("GSAP_REVERT_ERR", err);
+    }
+  };
+}, []);
+
+
+
+
 
 
 
@@ -135,7 +242,7 @@ export default function Hero({
           <div className="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
             <a
               href="#projects"
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
+              className="h-btns inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
               aria-label="View work"
               style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
             >
@@ -145,7 +252,7 @@ export default function Hero({
 
             <a
               href="#contact"
-              className="inline-flex items-center px-6 py-3 rounded-2xl font-bold gap-3 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
+              className="h-btns inline-flex items-center px-6 py-3 rounded-2xl font-bold gap-3 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
               aria-label="Hire me"
               style={{ backgroundColor: "var(--text-primary)", color: "var(--bg)" }}
             >
@@ -154,7 +261,7 @@ export default function Hero({
 
             <button
               onClick={handleDownloadCV}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-medium border focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
+              className="h-btns inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-medium border focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2"
               aria-label="Download CV"
               style={{ borderColor: "var(--border)", color: "var(--text-primary)", backgroundColor: "transparent" }}
               data-gsap
@@ -166,7 +273,7 @@ export default function Hero({
 
           {/* Quick stats */}
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-sm mx-auto lg:mx-0">
-            <div className="p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
+            <div className="h-boxes p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
               <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                 Experience
               </div>
@@ -175,7 +282,7 @@ export default function Hero({
               </div>
             </div>
 
-            <div className="p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
+            <div className="h-boxes p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
               <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                 Projects
               </div>
@@ -184,7 +291,7 @@ export default function Hero({
               </div>
             </div>
 
-            <div className="p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
+            <div className="h-boxes p-3 rounded-xl text-center" style={{ backgroundColor: "var(--bg-alt)", borderColor: "var(--border)" }}>
               <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                 Clients
               </div>
