@@ -15,7 +15,47 @@ const Contact = () => {
 
     const accentRgb = "212, 175, 55"; 
     
-    
+    // --- Handlers ---
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Send via EmailJS
+            const result = await emailjs.send(
+                'service_w0f0koo',  // Service ID
+                'template_nf3c8dm', // Template ID
+                {
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                },
+                import.meta.env.VITE_EMAILJS_PUBLIC_KEY // Public Key from .env
+            );
+
+            console.log('Email sent! ID:', result.text);
+            
+            // Success: Update button state
+            setIsSuccess(true);
+            
+            // Reset form
+            setFormData({ name: '', email: '', subject: '', message: '' });
+            
+            // Revert after 3 seconds
+            setTimeout(() => {
+                setIsSuccess(false);
+            }, 3000);
+        } catch (error) {
+            console.error('Send failed:', error);
+            // Error: Keep alert, reset success state
+            setIsSuccess(false);
+            alert('Oops—something went wrong. Try again or email me directly!');
+        }
+    };
 
     // --- Input Styles ---
     const inputStyle = {
