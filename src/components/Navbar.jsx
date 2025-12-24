@@ -124,7 +124,7 @@ export default function Navbar() {
             <a
               key={item.name}
               href={item.href}
-              className={`text-lg font-medium relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-opacity-100`}
+              className={`text-[1rem] font-medium relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-opacity-100`}
               // 💡 Applying mid-to-side hover logic
               style={{ 
                   ...hoverUnderlineStyle, 
@@ -147,7 +147,7 @@ export default function Navbar() {
             className={`inline-flex items-center justify-center h-10 px-5 rounded-lg font-semibold text-md ml-4 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 transition-colors duration-200`}
             style={{
               backgroundColor: "var(--accent)",
-              color: "var(--bg)",
+              color: "white",
               boxShadow: isScrolled ? "0 8px 30px var(--muted)" : "0 6px 18px var(--muted)",
             }}
             onMouseOver={handleButtonHoverIn}
